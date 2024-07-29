@@ -166,6 +166,11 @@ func (r *CollectionResource) Create(ctx context.Context, req resource.CreateRequ
 			DefaultAccessLevel: plan.DefaultAccessLevel.ValueString(),
 		},
 	}
+
+	if plan.DefaultAccessLevel.ValueString() == "restricted" {
+		payload.Collection.DefaultAccessLevel = "none"
+	}
+
 	jsonBody, _ := json.Marshal(payload)
 
 	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(jsonBody))
