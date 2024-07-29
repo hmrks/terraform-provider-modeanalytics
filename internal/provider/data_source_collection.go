@@ -132,6 +132,10 @@ func (d *CollectionDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	url := fmt.Sprintf("%s/api/%s/spaces/%s", d.modeHost, d.workspaceId, data.CollectionToken.ValueString())
 
 	httpReq, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read group, got error: %s", err))
+		return
+	}
 
 	// If applicable, this is a great opportunity to initialize any necessary
 	// provider client data and make a call using it.

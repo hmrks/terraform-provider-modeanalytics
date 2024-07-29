@@ -201,6 +201,10 @@ func (d *DataSourceDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	url := fmt.Sprintf("%s/api/%s/data_sources/%s", d.modeHost, d.workspaceId, data.DataSourceToken.ValueString())
 
 	httpReq, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to list collections: %s", err))
+		return
+	}
 
 	// If applicable, this is a great opportunity to initialize any necessary
 	// provider client data and make a call using it.

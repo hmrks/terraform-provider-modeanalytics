@@ -97,6 +97,10 @@ func (d *WorkspaceMembershipsDataSource) Read(ctx context.Context, req datasourc
 	url := fmt.Sprintf("%s/api/%s/memberships", d.modeHost, d.workspaceId)
 
 	httpReq, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to list collections: %s", err))
+		return
+	}
 
 	httpResp, err := d.client.Do(httpReq)
 	if err != nil {
@@ -106,7 +110,7 @@ func (d *WorkspaceMembershipsDataSource) Read(ctx context.Context, req datasourc
 	defer httpResp.Body.Close()
 
 	if httpResp.StatusCode != http.StatusOK {
-		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to list memberships: %s", httpResp.StatusCode))
+		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to list memberships: %d", httpResp.StatusCode))
 		return
 	}
 

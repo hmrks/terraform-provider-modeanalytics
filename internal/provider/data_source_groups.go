@@ -87,6 +87,10 @@ func (d *GroupsDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 	url := fmt.Sprintf("%s/api/%s/groups", d.modeHost, d.workspaceId)
 
 	httpReq, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to list collections: %s", err))
+		return
+	}
 
 	httpResp, err := d.client.Do(httpReq)
 	if err != nil {
@@ -96,7 +100,7 @@ func (d *GroupsDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 	defer httpResp.Body.Close()
 
 	if httpResp.StatusCode != http.StatusOK {
-		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to list groups: %s", httpResp.StatusCode))
+		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to list groups: %d", httpResp.StatusCode))
 		return
 	}
 

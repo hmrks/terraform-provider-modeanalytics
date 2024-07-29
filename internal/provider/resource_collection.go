@@ -182,7 +182,7 @@ func (r *CollectionResource) Create(ctx context.Context, req resource.CreateRequ
 	httpResp, err := r.client.Do(httpReq)
 
 	if err != nil || httpResp.StatusCode != http.StatusOK {
-		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Two Unable to create collection, got error: %s", httpResp))
+		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Two Unable to create collection, got error: %v", httpResp))
 		return
 	}
 	defer httpResp.Body.Close()
@@ -390,7 +390,7 @@ func (r *CollectionResource) Delete(ctx context.Context, req resource.DeleteRequ
 
 	httpResp, err := r.client.Do(httpReq)
 	if err != nil || httpResp.StatusCode != http.StatusOK {
-		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete collection, got error: %s", httpResp))
+		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete collection, got error: %v", httpResp))
 		return
 	}
 	defer httpResp.Body.Close()

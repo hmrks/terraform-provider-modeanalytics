@@ -124,7 +124,7 @@ func (r *GroupMembershipResource) Create(ctx context.Context, req resource.Creat
 
 	httpResp, err := r.client.Do(httpReq)
 	if err != nil || httpResp.StatusCode != http.StatusOK {
-		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Two Unable to create group membership, got error: %s", httpResp))
+		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Two Unable to create group membership, got error: %v", httpResp))
 		return
 	}
 	defer httpResp.Body.Close()
@@ -214,7 +214,7 @@ func (r *GroupMembershipResource) Delete(ctx context.Context, req resource.Delet
 
 	httpResp, err := r.client.Do(httpReq)
 	if err != nil || httpResp.StatusCode != http.StatusOK {
-		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete group membership, got error: %s", httpResp))
+		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete group membership, got error: %v", httpResp))
 		return
 	}
 	defer httpResp.Body.Close()

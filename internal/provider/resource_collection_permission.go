@@ -161,7 +161,7 @@ func (r *CollectionPermissionResource) Create(ctx context.Context, req resource.
 
 	httpResp, err := r.client.Do(httpReq)
 	if err != nil || httpResp.StatusCode != http.StatusOK {
-		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to create collection permission, got error: %s", httpResp))
+		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to create collection permission, got error: %v", httpResp))
 		return
 	}
 	defer httpResp.Body.Close()
@@ -290,7 +290,7 @@ func (r *CollectionPermissionResource) Delete(ctx context.Context, req resource.
 
 	httpResp, err := r.client.Do(httpReq)
 	if err != nil || httpResp.StatusCode != http.StatusOK {
-		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete collection permission, got error: %s", httpResp))
+		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete collection permission, got error: %v", httpResp))
 		return
 	}
 	defer httpResp.Body.Close()

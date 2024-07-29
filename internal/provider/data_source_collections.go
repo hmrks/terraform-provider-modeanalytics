@@ -95,6 +95,10 @@ func (d *CollectionsDataSource) Read(ctx context.Context, req datasource.ReadReq
 	url := fmt.Sprintf("%s/api/%s/spaces?filter=all", d.modeHost, d.workspaceId)
 
 	httpReq, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to list collections: %s", err))
+		return
+	}
 
 	httpResp, err := d.client.Do(httpReq)
 	if err != nil {
@@ -104,7 +108,7 @@ func (d *CollectionsDataSource) Read(ctx context.Context, req datasource.ReadReq
 	defer httpResp.Body.Close()
 
 	if httpResp.StatusCode != http.StatusOK {
-		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to list collections: %s", httpResp.StatusCode))
+		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to list collections: %d", httpResp.StatusCode))
 		return
 	}
 

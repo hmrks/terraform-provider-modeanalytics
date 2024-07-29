@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	// "github.com/hashicorp/terraform-plugin-framework/function"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -160,7 +159,7 @@ func New(version string) func() provider.Provider {
 	}
 }
 
-// Custom transport to add headers
+// Custom transport to add headers.
 type customTransport struct {
 	apiToken            string
 	apiSecret           string

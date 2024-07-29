@@ -91,6 +91,10 @@ func (d *GroupDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 	url := fmt.Sprintf("%s/api/%s/groups/%s", d.modeHost, d.workspaceId, data.GroupToken.ValueString())
 
 	httpReq, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to list collections: %s", err))
+		return
+	}
 
 	// If applicable, this is a great opportunity to initialize any necessary
 	// provider client data and make a call using it.
