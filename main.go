@@ -4,14 +4,15 @@
 package main
 
 import (
-    "context"
-    "flag"
-    "log"
+	"context"
+	"flag"
+	"log"
 
-    "github.com/hashicorp/terraform-plugin-framework/providerserver"
+	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 
-    "terraform-provider-modeanalytics/internal/provider"
+	"terraform-provider-modeanalytics/internal/provider"
 )
+
 // Run "go generate" to format example terraform files and generate the docs for the registry/website
 
 // If you do not have terraform installed, you can remove the formatting command, but its suggested to
