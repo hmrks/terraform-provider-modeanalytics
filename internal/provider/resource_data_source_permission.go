@@ -221,6 +221,55 @@ func (r *DataSourcePermissionResource) Read(ctx context.Context, req resource.Re
 		resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 	} else if httpResp.StatusCode == http.StatusNotFound {
 		resp.State.RemoveResource(ctx)
+	} else if httpResp.StatusCode == http.StatusInternalServerError {
+
+		list_url := fmt.Sprintf("%s/api/%s/data_sources/%s/permissions", r.modeHost, r.workspaceId, state.DataSourceToken.ValueString())
+
+		listHttpReq, err := http.NewRequest("GET", list_url, nil)
+		if err != nil {
+			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read data source permission, got error: %s", err))
+			return
+		}
+		listHttpResp, err := r.client.Do(listHttpReq)
+		if err != nil {
+			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read data source permission, got error: %s", err))
+			return
+		}
+		defer listHttpResp.Body.Close()
+
+		var listResponseData struct {
+			Embedded struct {
+				Entitlements []struct {
+					PermissionToken string `json:"token"`
+					Action          string `json:"action"`
+				} `json:"data_source_entitlements"`
+			} `json:"_embedded"`
+		}
+
+		if listHttpResp.StatusCode == http.StatusOK {
+			err = json.NewDecoder(listHttpResp.Body).Decode(&listResponseData)
+			if err != nil {
+				resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Error parsing response: %s", err))
+				return
+			}
+
+			var found bool
+
+			for _, entitlement := range listResponseData.Embedded.Entitlements {
+				if entitlement.PermissionToken == state.PermissionToken.ValueString() {
+					state.Action = types.StringValue(entitlement.Action)
+					resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+					found = true
+					break
+				}
+			}
+
+			if !found {
+				resp.State.RemoveResource(ctx)
+			}
+		} else {
+			resp.Diagnostics.AddError("API response error", fmt.Sprintf("Received non-200 response status: %d", listHttpResp.StatusCode))
+		}
 	} else {
 		resp.Diagnostics.AddError("API response error", fmt.Sprintf("Received non-200 response status: %d", httpResp.StatusCode))
 	}
