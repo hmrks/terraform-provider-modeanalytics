@@ -77,3 +77,20 @@ func CheckDeletion(resourceURL string, client *http.Client) error {
 		}
 	}
 }
+
+func HttpRetry(client *http.Client, httpReq *http.Request) (*http.Response, error) {
+	sleep := 10 * time.Second
+	attempts := 9
+
+	var httpResp *http.Response
+	var err error
+
+	for i := 0; i < attempts; i++ {
+		httpResp, err = client.Do(httpReq)
+		if httpResp.StatusCode != http.StatusTooManyRequests {
+			break
+		}
+		time.Sleep(sleep)
+	}
+	return httpResp, err
+}

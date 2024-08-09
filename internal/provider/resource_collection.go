@@ -179,7 +179,7 @@ func (r *CollectionResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
-	httpResp, err := r.client.Do(httpReq)
+	httpResp, err := HttpRetry(r.client, httpReq)
 
 	if err != nil || httpResp.StatusCode != http.StatusOK {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Two Unable to create collection, got error: %v", httpResp))
@@ -233,7 +233,7 @@ func (r *CollectionResource) Read(ctx context.Context, req resource.ReadRequest,
 		return
 	}
 
-	httpResp, err := r.client.Do(httpReq)
+	httpResp, err := HttpRetry(r.client, httpReq)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read collection, got error: %s", err))
 		return
@@ -288,7 +288,7 @@ func (r *CollectionResource) Read(ctx context.Context, req resource.ReadRequest,
 			return
 		}
 
-		httpResp, err := r.client.Do(httpReq)
+		httpResp, err := HttpRetry(r.client, httpReq)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read collection, got error: %s", err))
 			return
@@ -334,7 +334,7 @@ func (r *CollectionResource) Update(ctx context.Context, req resource.UpdateRequ
 		return
 	}
 
-	httpResp, err := r.client.Do(httpReq)
+	httpResp, err := HttpRetry(r.client, httpReq)
 	if err != nil || httpResp.StatusCode != http.StatusOK {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update collection, got error: %s", url))
 		return
@@ -388,7 +388,7 @@ func (r *CollectionResource) Delete(ctx context.Context, req resource.DeleteRequ
 		return
 	}
 
-	httpResp, err := r.client.Do(httpReq)
+	httpResp, err := HttpRetry(r.client, httpReq)
 	if err != nil || httpResp.StatusCode != http.StatusOK {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete collection, got error: %v", httpResp))
 		return

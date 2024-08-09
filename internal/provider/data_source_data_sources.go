@@ -119,7 +119,7 @@ func (d *DataSourcesDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
-	httpResp, err := d.client.Do(httpReq)
+	httpResp, err := HttpRetry(d.client, httpReq)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to list data sources: %s", err))
 		return

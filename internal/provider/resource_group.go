@@ -119,7 +119,7 @@ func (r *GroupResource) Create(ctx context.Context, req resource.CreateRequest, 
 		return
 	}
 
-	httpResp, err := r.client.Do(httpReq)
+	httpResp, err := HttpRetry(r.client, httpReq)
 	if err != nil || httpResp.StatusCode != http.StatusOK {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Two Unable to create group, got error: %v", httpResp))
 		return
@@ -159,7 +159,7 @@ func (r *GroupResource) Read(ctx context.Context, req resource.ReadRequest, resp
 		return
 	}
 
-	httpResp, err := r.client.Do(httpReq)
+	httpResp, err := HttpRetry(r.client, httpReq)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read group, got error: %s", err))
 		return
@@ -214,7 +214,7 @@ func (r *GroupResource) Update(ctx context.Context, req resource.UpdateRequest, 
 		return
 	}
 
-	httpResp, err := r.client.Do(httpReq)
+	httpResp, err := HttpRetry(r.client, httpReq)
 	if err != nil || httpResp.StatusCode != http.StatusOK {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update group, got error: %s", url))
 		return
@@ -253,7 +253,7 @@ func (r *GroupResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 		return
 	}
 
-	httpResp, err := r.client.Do(httpReq)
+	httpResp, err := HttpRetry(r.client, httpReq)
 	if err != nil || httpResp.StatusCode != http.StatusOK {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete group, got error: %v", httpResp))
 		return
