@@ -153,7 +153,7 @@ func (r *CollectionPermissionResource) Create(ctx context.Context, req resource.
 	}
 	jsonBody, _ := json.Marshal(payload)
 
-	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(jsonBody))
+	httpReq, err := HttpRetry(ctx, http.MethodPost, url, bytes.NewBuffer(jsonBody))
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to create collection permission, got error: %s", err))
 		return
@@ -243,7 +243,7 @@ func (r *CollectionPermissionResource) Update(ctx context.Context, req resource.
 	}
 
 	jsonBody, _ := json.Marshal(payload)
-	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPatch, url, bytes.NewBuffer(jsonBody))
+	httpReq, err := HttpRetry(ctx, http.MethodPatch, url, bytes.NewBuffer(jsonBody))
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update collection permission, got error: %s", err))
 		return
@@ -282,7 +282,7 @@ func (r *CollectionPermissionResource) Delete(ctx context.Context, req resource.
 	}
 
 	url := fmt.Sprintf("%s/api/%s/spaces/%s/permissions/%s", r.modeHost, r.workspaceId, state.CollectionToken.ValueString(), state.PermissionToken.ValueString())
-	httpReq, err := http.NewRequestWithContext(ctx, http.MethodDelete, url, nil)
+	httpReq, err := HttpRetry(ctx, http.MethodDelete, url, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete collection permission, got error: %s", err))
 		return

@@ -113,7 +113,7 @@ func (d *DataSourcesDataSource) Read(ctx context.Context, req datasource.ReadReq
 
 	url := fmt.Sprintf("%s/api/%s/data_sources", d.modeHost, d.workspaceId)
 
-	httpReq, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	httpReq, err := HttpRetry(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to list collections: %s", err))
 		return

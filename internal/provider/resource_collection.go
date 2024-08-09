@@ -173,7 +173,7 @@ func (r *CollectionResource) Create(ctx context.Context, req resource.CreateRequ
 
 	jsonBody, _ := json.Marshal(payload)
 
-	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(jsonBody))
+	httpReq, err := HttpRetry(ctx, http.MethodPost, url, bytes.NewBuffer(jsonBody))
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("One Unable to create collection, got error: %s", err))
 		return
@@ -328,7 +328,7 @@ func (r *CollectionResource) Update(ctx context.Context, req resource.UpdateRequ
 		},
 	}
 	jsonBody, _ := json.Marshal(payload)
-	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPatch, url, bytes.NewBuffer(jsonBody))
+	httpReq, err := HttpRetry(ctx, http.MethodPatch, url, bytes.NewBuffer(jsonBody))
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update collection, got error: %s", err))
 		return
@@ -382,7 +382,7 @@ func (r *CollectionResource) Delete(ctx context.Context, req resource.DeleteRequ
 	}
 
 	url := fmt.Sprintf("%s/api/%s/spaces/%s", r.modeHost, r.workspaceId, state.CollectionToken.ValueString())
-	httpReq, err := http.NewRequestWithContext(ctx, http.MethodDelete, url, nil)
+	httpReq, err := HttpRetry(ctx, http.MethodDelete, url, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete collection, got error: %s", err))
 		return

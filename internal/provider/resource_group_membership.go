@@ -116,7 +116,7 @@ func (r *GroupMembershipResource) Create(ctx context.Context, req resource.Creat
 	}
 	jsonBody, _ := json.Marshal(payload)
 
-	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(jsonBody))
+	httpReq, err := HttpRetry(ctx, http.MethodPost, url, bytes.NewBuffer(jsonBody))
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("One Unable to create group membership, got error: %s", err))
 		return
@@ -206,7 +206,7 @@ func (r *GroupMembershipResource) Delete(ctx context.Context, req resource.Delet
 	}
 
 	url := fmt.Sprintf("%s/api/%s/groups/%s/memberships/%s", r.modeHost, r.workspaceId, state.GroupToken.ValueString(), state.MembershipToken.ValueString())
-	httpReq, err := http.NewRequestWithContext(ctx, http.MethodDelete, url, nil)
+	httpReq, err := HttpRetry(ctx, http.MethodDelete, url, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete group membership, got error: %s", err))
 		return
