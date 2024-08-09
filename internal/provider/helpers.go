@@ -1,7 +1,6 @@
 package provider
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -77,18 +76,4 @@ func CheckDeletion(resourceURL string, client *http.Client) error {
 			}
 		}
 	}
-}
-
-func HttpRetry(ctx context.Context, method, url string, body io.Reader) (*Request, error) {
-	sleep := 10 * time.Second
-	attempts := 9
-
-	for i := 0; i < attempts; i++ {
-		httpReq, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-		if httpReq.StatusCode != http.StatusTooManyRequests {
-			break
-		}
-		time.Sleep(sleep)
-	}
-	return httpReq, err
 }

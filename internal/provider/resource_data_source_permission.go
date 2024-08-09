@@ -153,7 +153,7 @@ func (r *DataSourcePermissionResource) Create(ctx context.Context, req resource.
 	}
 	jsonBody, _ := json.Marshal(payload)
 
-	httpReq, err := HttpRetry(ctx, http.MethodPost, url, bytes.NewBuffer(jsonBody))
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(jsonBody))
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("One Unable to create data source permission, got error: %s", err))
 		return
@@ -292,7 +292,7 @@ func (r *DataSourcePermissionResource) Update(ctx context.Context, req resource.
 	}
 
 	jsonBody, _ := json.Marshal(payload)
-	httpReq, err := HttpRetry(ctx, http.MethodPatch, url, bytes.NewBuffer(jsonBody))
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPatch, url, bytes.NewBuffer(jsonBody))
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update data source permission, got error: %s", err))
 		return
@@ -331,7 +331,7 @@ func (r *DataSourcePermissionResource) Delete(ctx context.Context, req resource.
 	}
 
 	url := fmt.Sprintf("%s/api/%s/data_sources/%s/permissions/%s", r.modeHost, r.workspaceId, state.DataSourceToken.ValueString(), state.PermissionToken.ValueString())
-	httpReq, err := HttpRetry(ctx, http.MethodDelete, url, nil)
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodDelete, url, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete data source permission, got error: %s", err))
 		return

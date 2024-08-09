@@ -113,7 +113,7 @@ func (r *GroupResource) Create(ctx context.Context, req resource.CreateRequest, 
 	}
 	jsonBody, _ := json.Marshal(payload)
 
-	httpReq, err := HttpRetry(ctx, http.MethodPost, url, bytes.NewBuffer(jsonBody))
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(jsonBody))
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("One Unable to create group, got error: %s", err))
 		return
@@ -208,7 +208,7 @@ func (r *GroupResource) Update(ctx context.Context, req resource.UpdateRequest, 
 		},
 	}
 	jsonBody, _ := json.Marshal(payload)
-	httpReq, err := HttpRetry(ctx, http.MethodPatch, url, bytes.NewBuffer(jsonBody))
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPatch, url, bytes.NewBuffer(jsonBody))
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update group, got error: %s", err))
 		return
@@ -247,7 +247,7 @@ func (r *GroupResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 	}
 
 	url := fmt.Sprintf("%s/api/%s/groups/%s", r.modeHost, r.workspaceId, state.GroupToken.ValueString())
-	httpReq, err := HttpRetry(ctx, http.MethodDelete, url, nil)
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodDelete, url, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete group, got error: %s", err))
 		return

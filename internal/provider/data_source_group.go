@@ -90,7 +90,7 @@ func (d *GroupDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 	// Construct the URL using modeHost, workspaceId, and groupToken
 	url := fmt.Sprintf("%s/api/%s/groups/%s", d.modeHost, d.workspaceId, data.GroupToken.ValueString())
 
-	httpReq, err := HttpRetry(ctx, http.MethodGet, url, nil)
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to list collections: %s", err))
 		return
