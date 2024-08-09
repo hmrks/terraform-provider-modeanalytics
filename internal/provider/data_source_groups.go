@@ -92,7 +92,7 @@ func (d *GroupsDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 		return
 	}
 
-	httpResp, err := d.client.Do(httpReq)
+	httpResp, err := HttpRetry(d.client, httpReq)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to list groups: %s", err))
 		return

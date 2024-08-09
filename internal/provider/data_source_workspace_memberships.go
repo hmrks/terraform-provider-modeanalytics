@@ -102,7 +102,7 @@ func (d *WorkspaceMembershipsDataSource) Read(ctx context.Context, req datasourc
 		return
 	}
 
-	httpResp, err := d.client.Do(httpReq)
+	httpResp, err := HttpRetry(d.client, httpReq)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to list memberships: %s", err))
 		return

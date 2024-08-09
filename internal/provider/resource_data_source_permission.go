@@ -159,7 +159,7 @@ func (r *DataSourcePermissionResource) Create(ctx context.Context, req resource.
 		return
 	}
 
-	httpResp, err := r.client.Do(httpReq)
+	httpResp, err := HttpRetry(r.client, httpReq)
 	if err != nil || httpResp.StatusCode != http.StatusOK {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Two Unable to create data source permission, got error: %v", httpResp))
 		return
@@ -197,7 +197,7 @@ func (r *DataSourcePermissionResource) Read(ctx context.Context, req resource.Re
 		return
 	}
 
-	httpResp, err := r.client.Do(httpReq)
+	httpResp, err := HttpRetry(r.client, httpReq)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read data source permission, got error: %s", err))
 		return
@@ -230,7 +230,7 @@ func (r *DataSourcePermissionResource) Read(ctx context.Context, req resource.Re
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read data source permission, got error: %s", err))
 			return
 		}
-		listHttpResp, err := r.client.Do(listHttpReq)
+		listHttpResp, err := HttpRetry(r.client, listHttpReq)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read data source permission, got error: %s", err))
 			return
@@ -298,7 +298,7 @@ func (r *DataSourcePermissionResource) Update(ctx context.Context, req resource.
 		return
 	}
 
-	httpResp, err := r.client.Do(httpReq)
+	httpResp, err := HttpRetry(r.client, httpReq)
 	if err != nil || httpResp.StatusCode != http.StatusOK {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update data source permission, got error: %s", url))
 		return
@@ -337,7 +337,7 @@ func (r *DataSourcePermissionResource) Delete(ctx context.Context, req resource.
 		return
 	}
 
-	httpResp, err := r.client.Do(httpReq)
+	httpResp, err := HttpRetry(r.client, httpReq)
 	if err != nil || httpResp.StatusCode != http.StatusOK {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete data source permission, got error: %v", httpResp))
 		return

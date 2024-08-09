@@ -122,7 +122,7 @@ func (r *GroupMembershipResource) Create(ctx context.Context, req resource.Creat
 		return
 	}
 
-	httpResp, err := r.client.Do(httpReq)
+	httpResp, err := HttpRetry(r.client, httpReq)
 	if err != nil || httpResp.StatusCode != http.StatusOK {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Two Unable to create group membership, got error: %v", httpResp))
 		return
@@ -160,7 +160,7 @@ func (r *GroupMembershipResource) Read(ctx context.Context, req resource.ReadReq
 		return
 	}
 
-	httpResp, err := r.client.Do(httpReq)
+	httpResp, err := HttpRetry(r.client, httpReq)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read group membership, got error: %s", err))
 		return
@@ -212,7 +212,7 @@ func (r *GroupMembershipResource) Delete(ctx context.Context, req resource.Delet
 		return
 	}
 
-	httpResp, err := r.client.Do(httpReq)
+	httpResp, err := HttpRetry(r.client, httpReq)
 	if err != nil || httpResp.StatusCode != http.StatusOK {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete group membership, got error: %v", httpResp))
 		return
