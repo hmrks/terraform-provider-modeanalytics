@@ -46,7 +46,7 @@ func (d *GroupDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 			},
 			"group_token": schema.StringAttribute{
 				MarkdownDescription: "Group configurable attribute",
-				Optional:            true,
+				Required:            true,
 			},
 		},
 	}

@@ -9,7 +9,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+	"io"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -32,21 +34,17 @@ func (d *GroupMembershipsDataSource) Metadata(ctx context.Context, req datasourc
 
 func (d *GroupMembershipsDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "Group Memberships data source",
+		MarkdownDescription: "Data source for retrieving member tokens of a group",
 
 		Attributes: map[string]schema.Attribute{
-			"state": schema.StringAttribute{
-				MarkdownDescription: "State of the group",
-				Computed:            true,
-			},
-			"name": schema.StringAttribute{
-				MarkdownDescription: "Name of the group",
-				Computed:            true,
-			},
 			"group_token": schema.StringAttribute{
-				MarkdownDescription: "Group configurable attribute",
+				MarkdownDescription: "The token identifying the group.",
 				Required:            true,
+			},
+			"member_tokens": schema.ListAttribute{
+				MarkdownDescription: "A list of member tokens in the group.",
+				Computed:            true,
+				ElementType:         types.StringType,
 			},
 		},
 	}
@@ -78,11 +76,15 @@ func (d *GroupMembershipsDataSource) Configure(ctx context.Context, req datasour
 }
 
 func (d *GroupMembershipsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var data GroupResourceModel
+	// Define a struct matching the schema with both group_token and member_tokens
+	var data struct {
+		GroupToken   types.String `tfsdk:"group_token"`
+		MemberTokens types.List   `tfsdk:"member_tokens"`
+	}
 
-	// Read Terraform configuration data into the model
-	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
-
+	// Only retrieve group_token from config; member_tokens will be computed
+	diags := req.Config.Get(ctx, &data)
+	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -92,44 +94,59 @@ func (d *GroupMembershipsDataSource) Read(ctx context.Context, req datasource.Re
 
 	httpReq, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
-		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to list collections: %s", err))
+		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to create request: %s", err))
 		return
 	}
 
-	// If applicable, this is a great opportunity to initialize any necessary
-	// provider client data and make a call using it.
-	httpResp, err := HttpRetry(d.client, httpReq)
+	httpResp, err := d.client.Do(httpReq)
 	if err != nil {
-		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read group, got error: %s", err))
+		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to fetch memberships: %s", err))
 		return
 	}
 	defer httpResp.Body.Close()
 
-	if httpResp.StatusCode != http.StatusOK {
-		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unexpected status code: %d", httpResp.StatusCode))
-		return
-	}
-
-	// Parse the response body
-	var responseData struct {
-		Name  string `json:"name"`
-		State string `json:"state"`
-	}
-
-	err = json.NewDecoder(httpResp.Body).Decode(&responseData)
+	// Read and log the entire response body for debugging
+	bodyBytes, err := io.ReadAll(httpResp.Body)
 	if err != nil {
-		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Error parsing response: %s", err))
+		resp.Diagnostics.AddError("Read Error", fmt.Sprintf("Unable to read response body: %s", err))
 		return
 	}
 
-	// Assign the parsed values to the data model
-	data.Name = types.StringValue(responseData.Name)
-	data.State = types.StringValue(responseData.State)
+	// Parse the response JSON
+	var membershipsResponse struct {
+		Embedded struct {
+			GroupMemberships []struct {
+				MemberToken string `json:"member_token"`
+			} `json:"group_memberships"`
+		} `json:"_embedded"`
+	}
+
+	if err := json.Unmarshal(bodyBytes, &membershipsResponse); err != nil {
+		resp.Diagnostics.AddError("Decode Error", fmt.Sprintf("Error decoding response: %s", err))
+		return
+	}
+
+	// Convert member tokens to a list of terraform values
+	memberTokens := make([]attr.Value, len(membershipsResponse.Embedded.GroupMemberships))
+	for i, membership := range membershipsResponse.Embedded.GroupMemberships {
+		memberTokens[i] = types.StringValue(membership.MemberToken)
+	}
+
+	// Convert to ListValue
+	memberTokensList, diags := types.ListValue(types.StringType, memberTokens)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Set the computed value
+	data.MemberTokens = memberTokensList
 
 	// Write logs using the tflog package
 	// Documentation: https://terraform.io/plugin/log
 	tflog.Trace(ctx, "read a data source")
 
-	// Save data into Terraform state
-	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	// Set the state
+	diags = resp.State.Set(ctx, &data)
+	resp.Diagnostics.Append(diags...)
 }
