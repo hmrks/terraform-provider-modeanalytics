@@ -44,7 +44,7 @@ func (d *DataSourcesDataSource) Schema(ctx context.Context, req datasource.Schem
 				Computed:            true,
 				ElementType: types.ObjectType{
 					AttrTypes: map[string]attr.Type{
-						"id":                           types.NumberType,
+						"id":                           types.StringType,
 						"name":                         types.StringType,
 						"description":                  types.StringType,
 						"data_source_token":            types.StringType,
@@ -57,7 +57,7 @@ func (d *DataSourcesDataSource) Schema(ctx context.Context, req datasource.Schem
 						"queryable":                    types.BoolType,
 						"soft_deleted":                 types.BoolType,
 						"display_name":                 types.StringType,
-						"account_id":                   types.NumberType,
+						"account_id":                   types.StringType,
 						"account_username":             types.StringType,
 						"organization_token":           types.StringType,
 						"organization_plan_code":       types.StringType,
@@ -135,7 +135,7 @@ func (d *DataSourcesDataSource) Read(ctx context.Context, req datasource.ReadReq
 	var responseData struct {
 		Embedded struct {
 			DataSources []struct {
-				Id                        float64                `json:"id"`
+				Id                        string                 `json:"id"`
 				Name                      string                 `json:"name"`
 				Description               string                 `json:"description"`
 				DataSourceToken           string                 `json:"token"`
@@ -148,7 +148,7 @@ func (d *DataSourcesDataSource) Read(ctx context.Context, req datasource.ReadReq
 				Queryable                 bool                   `json:"queryable"`
 				SoftDeleted               bool                   `json:"soft_deleted"`
 				DisplayName               string                 `json:"display_name"`
-				AccountId                 float64                `json:"account_id"`
+				AccountId                 string                 `json:"account_id"`
 				AccountUsername           string                 `json:"account_username"`
 				OrganizationToken         string                 `json:"organization_token"`
 				OrganizationPlanCode      string                 `json:"organization_plan_code"`
@@ -180,7 +180,7 @@ func (d *DataSourcesDataSource) Read(ctx context.Context, req datasource.ReadReq
 		customAttributes, _ := types.MapValueFrom(ctx, types.StringType, data_source.CustomAttributes)
 
 		data.DataSources = append(data.DataSources, DataSourceModel{
-			Id:                        types.NumberValue(big.NewFloat(data_source.Id)),
+			Id:                        types.StringValue(data_source.Id),
 			Name:                      types.StringValue(data_source.Name),
 			Description:               types.StringValue(data_source.Description),
 			DataSourceToken:           types.StringValue(data_source.DataSourceToken),
@@ -193,7 +193,7 @@ func (d *DataSourcesDataSource) Read(ctx context.Context, req datasource.ReadReq
 			Queryable:                 types.BoolValue(data_source.Queryable),
 			SoftDeleted:               types.BoolValue(data_source.SoftDeleted),
 			DisplayName:               types.StringValue(data_source.DisplayName),
-			AccountId:                 types.NumberValue(big.NewFloat(data_source.AccountId)),
+			AccountId:                 types.StringValue(data_source.AccountId),
 			AccountUsername:           types.StringValue(data_source.AccountUsername),
 			OrganizationToken:         types.StringValue(data_source.OrganizationToken),
 			OrganizationPlanCode:      types.StringValue(data_source.OrganizationPlanCode),
