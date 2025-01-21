@@ -21,7 +21,7 @@ Data source data source
 
 ### Read-Only
 
-- `account_id` (Number)
+- `account_id` (String)
 - `account_username` (String)
 - `adapter` (String)
 - `adapter_version` (String)
@@ -35,7 +35,7 @@ Data source data source
 - `display_name` (String)
 - `has_expensive_schema_updates` (Boolean)
 - `host` (String)
-- `id` (Number) The ID of this resource.
+- `id` (String) The ID of this resource.
 - `ldap` (Boolean)
 - `name` (String)
 - `organization_plan_code` (String)

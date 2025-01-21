@@ -25,7 +25,7 @@ Collection data source
 - `default_access_level` (String) Default access level attribute of the collection
 - `description` (String) Description of the collection
 - `free_default` (Boolean) Free default attribute of the collection
-- `id` (Number) Name of the collection
+- `id` (String) Name of the collection
 - `name` (String) Name of the collection
 - `restricted` (Boolean) Restricted attribute of the collection
 - `state` (String) State of the collection

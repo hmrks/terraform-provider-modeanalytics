@@ -31,5 +31,5 @@ description: |-
 ### Read-Only
 
 - `collection_token` (String) State of the collection
-- `id` (Number) Name of the collection
+- `id` (String) Name of the collection
 - `state` (String) State of the collection

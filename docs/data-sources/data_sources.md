@@ -24,7 +24,7 @@ Data sources data source
 
 Read-Only:
 
-- `account_id` (Number)
+- `account_id` (String)
 - `account_username` (String)
 - `adapter` (String)
 - `adapter_version` (String)
@@ -39,7 +39,7 @@ Read-Only:
 - `display_name` (String)
 - `has_expensive_schema_updates` (Boolean)
 - `host` (String)
-- `id` (Number)
+- `id` (String)
 - `ldap` (Boolean)
 - `name` (String)
 - `organization_plan_code` (String)

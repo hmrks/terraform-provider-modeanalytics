@@ -29,7 +29,7 @@ Read-Only:
 - `default_access_level` (String)
 - `description` (String)
 - `free_default` (Boolean)
-- `id` (Number)
+- `id` (String)
 - `name` (String)
 - `restricted` (Boolean)
 - `state` (String)
