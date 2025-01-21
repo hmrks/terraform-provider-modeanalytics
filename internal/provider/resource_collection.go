@@ -5,14 +5,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"math/big"
 	"net/http"
 
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/numberplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
@@ -64,11 +62,11 @@ func (r *CollectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
-			"id": schema.NumberAttribute{
+			"id": schema.StringAttribute{
 				MarkdownDescription: "Name of the collection",
 				Computed:            true,
-				PlanModifiers: []planmodifier.Number{
-					numberplanmodifier.UseStateForUnknown(),
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"state": schema.StringAttribute{
@@ -166,7 +164,6 @@ func (r *CollectionResource) Create(ctx context.Context, req resource.CreateRequ
 			DefaultAccessLevel: plan.DefaultAccessLevel.ValueString(),
 		},
 	}
-
 	if plan.DefaultAccessLevel.ValueString() == "restricted" {
 		payload.Collection.DefaultAccessLevel = "none"
 	}
@@ -188,16 +185,16 @@ func (r *CollectionResource) Create(ctx context.Context, req resource.CreateRequ
 	defer httpResp.Body.Close()
 
 	var responseData struct {
-		Id                 float64 `json:"id"`
-		Name               string  `json:"name"`
-		State              string  `json:"state"`
-		CollectionType     string  `json:"space_type"`
-		CollectionToken    string  `json:"token"`
-		Description        string  `json:"description"`
-		Restricted         bool    `json:"restricted"`
-		FreeDefault        bool    `json:"free_default"`
-		Viewable           bool    `json:"viewable?"`
-		DefaultAccessLevel string  `json:"default_access_level"`
+		Id                 string `json:"id"`
+		Name               string `json:"name"`
+		State              string `json:"state"`
+		CollectionType     string `json:"space_type"`
+		CollectionToken    string `json:"token"`
+		Description        string `json:"description"`
+		Restricted         bool   `json:"restricted"`
+		FreeDefault        bool   `json:"free_default"`
+		Viewable           bool   `json:"viewable?"`
+		DefaultAccessLevel string `json:"default_access_level"`
 	}
 
 	err = json.NewDecoder(httpResp.Body).Decode(&responseData)
@@ -208,7 +205,7 @@ func (r *CollectionResource) Create(ctx context.Context, req resource.CreateRequ
 
 	plan.CollectionToken = types.StringValue(responseData.CollectionToken)
 	plan.State = types.StringValue(responseData.State)
-	plan.Id = types.NumberValue(big.NewFloat(responseData.Id))
+	plan.Id = types.StringValue(responseData.Id)
 	plan.Restricted = types.BoolValue(responseData.Restricted)
 	plan.FreeDefault = types.BoolValue(responseData.FreeDefault)
 	plan.Viewable = types.BoolValue(responseData.Viewable)
@@ -241,16 +238,16 @@ func (r *CollectionResource) Read(ctx context.Context, req resource.ReadRequest,
 	defer httpResp.Body.Close()
 
 	var responseData struct {
-		Id                 float64 `json:"id"`
-		Name               string  `json:"name"`
-		State              string  `json:"state"`
-		CollectionType     string  `json:"space_type"`
-		CollectionToken    string  `json:"token"`
-		Description        string  `json:"description"`
-		Restricted         bool    `json:"restricted"`
-		FreeDefault        bool    `json:"free_default"`
-		Viewable           bool    `json:"viewable?"`
-		DefaultAccessLevel string  `json:"default_access_level"`
+		Id                 string `json:"id"`
+		Name               string `json:"name"`
+		State              string `json:"state"`
+		CollectionType     string `json:"space_type"`
+		CollectionToken    string `json:"token"`
+		Description        string `json:"description"`
+		Restricted         bool   `json:"restricted"`
+		FreeDefault        bool   `json:"free_default"`
+		Viewable           bool   `json:"viewable?"`
+		DefaultAccessLevel string `json:"default_access_level"`
 	}
 
 	if httpResp.StatusCode == http.StatusOK {
@@ -342,16 +339,16 @@ func (r *CollectionResource) Update(ctx context.Context, req resource.UpdateRequ
 	defer httpResp.Body.Close()
 
 	var responseData struct {
-		Id                 float64 `json:"id"`
-		Name               string  `json:"name"`
-		State              string  `json:"state"`
-		CollectionType     string  `json:"space_type"`
-		CollectionToken    string  `json:"token"`
-		Description        string  `json:"description"`
-		Restricted         bool    `json:"restricted"`
-		FreeDefault        bool    `json:"free_default"`
-		Viewable           bool    `json:"viewable?"`
-		DefaultAccessLevel string  `json:"default_access_level"`
+		Id                 string `json:"id"`
+		Name               string `json:"name"`
+		State              string `json:"state"`
+		CollectionType     string `json:"space_type"`
+		CollectionToken    string `json:"token"`
+		Description        string `json:"description"`
+		Restricted         bool   `json:"restricted"`
+		FreeDefault        bool   `json:"free_default"`
+		Viewable           bool   `json:"viewable?"`
+		DefaultAccessLevel string `json:"default_access_level"`
 	}
 	err = json.NewDecoder(httpResp.Body).Decode(&responseData)
 	if err != nil {

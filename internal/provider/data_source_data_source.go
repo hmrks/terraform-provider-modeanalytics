@@ -28,7 +28,7 @@ type DataSourceDataSource struct {
 }
 
 type DataSourceModel struct {
-	Id                        types.Number `tfsdk:"id"`
+	Id                        types.String `tfsdk:"id"`
 	Name                      types.String `tfsdk:"name"`
 	Description               types.String `tfsdk:"description"`
 	DataSourceToken           types.String `tfsdk:"data_source_token"`
@@ -41,7 +41,7 @@ type DataSourceModel struct {
 	Queryable                 types.Bool   `tfsdk:"queryable"`
 	SoftDeleted               types.Bool   `tfsdk:"soft_deleted"`
 	DisplayName               types.String `tfsdk:"display_name"`
-	AccountId                 types.Number `tfsdk:"account_id"`
+	AccountId                 types.String `tfsdk:"account_id"`
 	AccountUsername           types.String `tfsdk:"account_username"`
 	OrganizationToken         types.String `tfsdk:"organization_token"`
 	OrganizationPlanCode      types.String `tfsdk:"organization_plan_code"`
@@ -73,7 +73,7 @@ func (d *DataSourceDataSource) Schema(ctx context.Context, req datasource.Schema
 				MarkdownDescription: "Data source configurable attribute",
 				Required:            true,
 			},
-			"id": schema.NumberAttribute{
+			"id": schema.StringAttribute{
 				Computed: true,
 			},
 			"name": schema.StringAttribute{
@@ -109,7 +109,7 @@ func (d *DataSourceDataSource) Schema(ctx context.Context, req datasource.Schema
 			"display_name": schema.StringAttribute{
 				Computed: true,
 			},
-			"account_id": schema.NumberAttribute{
+			"account_id": schema.StringAttribute{
 				Computed: true,
 			},
 			"account_username": schema.StringAttribute{
@@ -222,7 +222,7 @@ func (d *DataSourceDataSource) Read(ctx context.Context, req datasource.ReadRequ
 
 	// Parse the response body
 	var responseData struct {
-		Id                        float64           `json:"id"`
+		Id                        string            `json:"id"`
 		Name                      string            `json:"name"`
 		Description               string            `json:"description"`
 		DataSourceToken           string            `json:"token"`
@@ -235,7 +235,7 @@ func (d *DataSourceDataSource) Read(ctx context.Context, req datasource.ReadRequ
 		Queryable                 bool              `json:"queryable"`
 		SoftDeleted               bool              `json:"soft_deleted"`
 		DisplayName               string            `json:"display_name"`
-		AccountId                 float64           `json:"account_id"`
+		AccountId                 string            `json:"account_id"`
 		AccountUsername           string            `json:"account_username"`
 		OrganizationToken         string            `json:"organization_token"`
 		OrganizationPlanCode      string            `json:"organization_plan_code"`
@@ -260,7 +260,7 @@ func (d *DataSourceDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	}
 
 	// Assign the parsed values to the data model
-	data.Id = types.NumberValue(big.NewFloat(responseData.Id))
+	data.Id = types.StringValue(responseData.Id)
 	data.Name = types.StringValue(responseData.Name)
 	data.Description = types.StringValue(responseData.Description)
 	data.DataSourceToken = types.StringValue(responseData.DataSourceToken)
@@ -273,7 +273,7 @@ func (d *DataSourceDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	data.Queryable = types.BoolValue(responseData.Queryable)
 	data.SoftDeleted = types.BoolValue(responseData.SoftDeleted)
 	data.DisplayName = types.StringValue(responseData.DisplayName)
-	data.AccountId = types.NumberValue(big.NewFloat(responseData.AccountId))
+	data.AccountId = types.StringValue(responseData.AccountId)
 	data.AccountUsername = types.StringValue(responseData.AccountUsername)
 	data.OrganizationToken = types.StringValue(responseData.OrganizationToken)
 	data.OrganizationPlanCode = types.StringValue(responseData.OrganizationPlanCode)
