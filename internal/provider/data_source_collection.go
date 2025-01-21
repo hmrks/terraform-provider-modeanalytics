@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"math/big"
 	"net/http"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -32,7 +31,7 @@ type CollectionModel struct {
 	State              types.String `tfsdk:"state"`
 	CollectionToken    types.String `tfsdk:"collection_token"`
 	CollectionType     types.String `tfsdk:"collection_type"`
-	Id                 types.Number `tfsdk:"id"`
+	Id                 types.String `tfsdk:"id"`
 	Description        types.String `tfsdk:"description"`
 	Restricted         types.Bool   `tfsdk:"restricted"`
 	FreeDefault        types.Bool   `tfsdk:"free_default"`
@@ -53,7 +52,7 @@ func (d *CollectionDataSource) Schema(ctx context.Context, req datasource.Schema
 				MarkdownDescription: "State of the collection",
 				Required:            true,
 			},
-			"id": schema.NumberAttribute{
+			"id": schema.StringAttribute{
 				MarkdownDescription: "Name of the collection",
 				Computed:            true,
 			},
@@ -136,7 +135,6 @@ func (d *CollectionDataSource) Read(ctx context.Context, req datasource.ReadRequ
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read group, got error: %s", err))
 		return
 	}
-
 	// If applicable, this is a great opportunity to initialize any necessary
 	// provider client data and make a call using it.
 	httpResp, err := HttpRetry(d.client, httpReq)
@@ -153,16 +151,16 @@ func (d *CollectionDataSource) Read(ctx context.Context, req datasource.ReadRequ
 
 	// Parse the response body
 	var responseData struct {
-		Name               string  `json:"name"`
-		State              string  `json:"state"`
-		Id                 float64 `json:"id"`
-		CollectionType     string  `json:"space_type"`
-		CollectionToken    string  `json:"token"`
-		Description        string  `json:"description"`
-		Restricted         bool    `json:"restricted"`
-		FreeDefault        bool    `json:"free_default"`
-		Viewable           bool    `json:"viewable?"`
-		DefaultAccessLevel string  `json:"default_access_level"`
+		Name               string `json:"name"`
+		State              string `json:"state"`
+		Id                 string `json:"id"`
+		CollectionType     string `json:"space_type"`
+		CollectionToken    string `json:"token"`
+		Description        string `json:"description"`
+		Restricted         bool   `json:"restricted"`
+		FreeDefault        bool   `json:"free_default"`
+		Viewable           bool   `json:"viewable?"`
+		DefaultAccessLevel string `json:"default_access_level"`
 	}
 
 	err = json.NewDecoder(httpResp.Body).Decode(&responseData)
@@ -174,7 +172,7 @@ func (d *CollectionDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	// Assign the parsed values to the data model
 	data.Name = types.StringValue(responseData.Name)
 	data.State = types.StringValue(responseData.State)
-	data.Id = types.NumberValue(big.NewFloat(responseData.Id))
+	data.Id = types.StringValue(responseData.Id)
 	data.CollectionType = types.StringValue(responseData.CollectionType)
 	data.CollectionToken = types.StringValue(responseData.CollectionToken)
 	data.Description = types.StringValue(responseData.Description)

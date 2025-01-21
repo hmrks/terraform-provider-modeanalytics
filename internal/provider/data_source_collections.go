@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"math/big"
 	"net/http"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -44,7 +43,7 @@ func (d *CollectionsDataSource) Schema(ctx context.Context, req datasource.Schem
 				Computed:            true,
 				ElementType: types.ObjectType{
 					AttrTypes: map[string]attr.Type{
-						"id":                   types.NumberType,
+						"id":                   types.StringType,
 						"name":                 types.StringType,
 						"state":                types.StringType,
 						"collection_token":     types.StringType,
@@ -116,16 +115,16 @@ func (d *CollectionsDataSource) Read(ctx context.Context, req datasource.ReadReq
 	var responseData struct {
 		Embedded struct {
 			Collections []struct {
-				Id                 float64 `json:"id"`
-				Name               string  `json:"name"`
-				State              string  `json:"state"`
-				CollectionToken    string  `json:"token"`
-				CollectionType     string  `json:"space_type"`
-				Description        string  `json:"description"`
-				Restricted         bool    `json:"restricted"`
-				FreeDefault        bool    `json:"free_default"`
-				Viewable           bool    `json:"viewable?"`
-				DefaultAccessLevel string  `json:"default_access_level"`
+				Id                 string `json:"id"`
+				Name               string `json:"name"`
+				State              string `json:"state"`
+				CollectionToken    string `json:"token"`
+				CollectionType     string `json:"space_type"`
+				Description        string `json:"description"`
+				Restricted         bool   `json:"restricted"`
+				FreeDefault        bool   `json:"free_default"`
+				Viewable           bool   `json:"viewable?"`
+				DefaultAccessLevel string `json:"default_access_level"`
 			} `json:"spaces"`
 		} `json:"_embedded"`
 	}
@@ -140,7 +139,7 @@ func (d *CollectionsDataSource) Read(ctx context.Context, req datasource.ReadReq
 
 	for _, collection := range responseData.Embedded.Collections {
 		data.Collections = append(data.Collections, CollectionModel{
-			Id:                 types.NumberValue(big.NewFloat(collection.Id)),
+			Id:                 types.StringValue(collection.Id),
 			Name:               types.StringValue(collection.Name),
 			State:              types.StringValue(collection.State),
 			CollectionToken:    types.StringValue(collection.CollectionToken),
